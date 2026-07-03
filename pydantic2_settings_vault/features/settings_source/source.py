@@ -209,9 +209,14 @@ class VaultConfigSettingsSource(PydanticBaseSettingsSource):
                 )
 
                 if vault_secret_key in vault_secrets_dict:
-                    k[field_name] = vault_secrets_dict[
-                        vault_secret_key
-                    ].get_secret_value()
+                    if isinstance(vault_secrets_dict[vault_secret_key], SecretStr):
+                        k[field_name] = vault_secrets_dict[
+                            vault_secret_key
+                        ].get_secret_value()
+                    else:
+                        k[field_name] = vault_secrets_dict[
+                            vault_secret_key
+                        ]
                 else:
                     logger.error(
                         "Vault secret key %r for settings field %r was not found "
